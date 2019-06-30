@@ -199,4 +199,4 @@ To configure this feature. Enable the Netlify identity service and Git Gateway o
 3.  Scroll down to  **Services > Git Gateway**, and click  **Enable Git Gateway**
 4. Accept the defaults and proceed. See the  [Netlify Identity documentation](https://www.netlify.com/docs/identity/) for more info.
 
-Now log in at `/admin/#/` and create some posts.
+Now log in at `/admin/` and create some posts!
