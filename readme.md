@@ -16,63 +16,6 @@ First, install Eleventy as usual. See the [Eleventy Getting Started guide](https
 ```bash
 mkdir -p admin pages posts static/img _includes/layouts
 ```
-The admin interface is a React app, and therefore can be as simple as a single HTML page that loads the interface from a CDN. Here we are also using the Netlify identify
-#### admin/index.html
-```html
-<!doctype html>
-<html>
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Content Manager</title>
-  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-</head>
-<body>
-  <!-- Include the script that builds the page and powers Netlify CMS -->
-  <script src="https://unpkg.com/netlify-cms@^2.0.0/dist/netlify-cms.js"></script>
-</body>
-</html>
-```
-Now create a `config.yml` that reflects the layout of our files, as well as the fields we want to show from the frontmatter.
-#### admin/config.yml
-```yaml
-backend:
-  name: git-gateway
-  branch: master # Branch to update (optional; defaults to master)
-
-# Uncomment below to enable drafts
-# publish_mode: editorial_workflow
-
-media_folder: "static/img" # Media files will be stored in the repo under images/uploads
-
-collections:
-  # Our blog posts
-  - name: "blog" # Used in routes, e.g., /admin/collections/blog
-    label: "Post" # Used in the UI
-    folder: "posts" # The path to the folder where the documents are stored
-    create: true # Allow users to create new documents in this collection
-    slug: "{{slug}}" # Filename template, e.g., YYYY-MM-DD-title.md
-    fields: # The fields for each document, usually in front matter
-      - { label: "Title", name: "title", widget: "string" }
-      - { label: "Publish Date", name: "date", widget: "datetime" }
-      - { label: "Summary", name: "summary", widget: "text" }
-      - { label: "Tags", name: "tags", widget: "list", default: ["post"] }
-      - { label: "Body", name: "body", widget: "markdown" }
-  # Our pages e.g. About
-  - name: "pages"
-    label: "Page"
-    folder: "pages"
-    create: false # Change to true to allow editors to create new pages
-    slug: "{{slug}}"
-    fields:
-      - { label: "Title", name: "title", widget: "string" }
-      - { label: "Publish Date", name: "date", widget: "datetime" }
-      - { label: "Permalink", name: "permalink", widget: "string" }
-      - { label: "Navigation Title", name: "navtitle", widget: "string" }
-      - { label: "Tags", name: "tags", widget: "hidden", default: "nav" }
-      - { label: "Body", name: "body", widget: "markdown" }
-```
-## Create a basic site in Eleventy
 For this site we simply want the ability to use Netlify CMS to edit Pages if necessary, and add Posts regularly. One of the pages will need to feature the available posts.
 
 To keep things simple, we will not be using other basic features of Eleventy to do things like include headers or footers.
@@ -157,10 +100,10 @@ We can't expect our end users to set all of the fields required to publish conte
   "tags": "post"
 }
 ```
-## Welcome Home
+### Welcome Home
 You're all set to create your new home! Posts will be able to be created from within Netlify CMS, but Pages will be created manually. After they're created you can edit them from within the CMS.
 
-### pages/home.md
+#### pages/home.md
 ```markdown
 ---
 layout: layouts/home.njk
@@ -173,6 +116,72 @@ tags:
 ---
 # Welcome to Home
 This is my home page. Welcome.
+```
+### See it in action
+You can run Eleventy to generate our site locally.  It's still rather impressive, but this will just make sure it all works. 
+```
+npx eleventy
+```
+If you're getting any errors at this point, check to make sure you've not upset the JSON deities with an errant comma.
+
+## Wire up NetlifyCMS
+The NetlifyCMS admin interface is a React app, and therefore may be as a simple as a single HTML file which loads from a CDN. We are also using the Netlify Identity service, so that resource should also be loaded here as well as everywhere else on the site.
+
+#### admin/index.html
+```html
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Content Manager</title>
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+</head>
+<body>
+  <!-- Include the script that builds the page and powers Netlify CMS -->
+  <script src="https://unpkg.com/netlify-cms@^2.0.0/dist/netlify-cms.js"></script>
+</body>
+</html>
+```
+Now create a `config.yml` that reflects the layout of our files, as well as the fields we want to show from the frontmatter. This can look complex, but if you look closely, you'll see it's actually a fairly simple description of what fields you want to edit.
+
+#### admin/config.yml
+```yaml
+backend:
+  name: git-gateway
+  branch: master # Branch to update (optional; defaults to master)
+
+# Uncomment below to enable drafts
+# publish_mode: editorial_workflow
+
+media_folder: "static/img" # Media files will be stored in the repo under images/uploads
+
+collections:
+  # Our blog posts
+  - name: "blog" # Used in routes, e.g., /admin/collections/blog
+    label: "Post" # Used in the UI
+    folder: "posts" # The path to the folder where the documents are stored
+    create: true # Allow users to create new documents in this collection
+    slug: "{{slug}}" # Filename template, e.g., YYYY-MM-DD-title.md
+    fields: # The fields for each document, usually in front matter
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Publish Date", name: "date", widget: "datetime" }
+      - { label: "Summary", name: "summary", widget: "text" }
+      - { label: "Tags", name: "tags", widget: "list", default: ["post"] }
+      - { label: "Body", name: "body", widget: "markdown" }
+  # Our pages e.g. About
+  - name: "pages"
+    label: "Page"
+    folder: "pages"
+    create: false # Change to true to allow editors to create new pages
+    slug: "{{slug}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Publish Date", name: "date", widget: "datetime" }
+      - { label: "Permalink", name: "permalink", widget: "string" }
+      - { label: "Navigation Title", name: "navtitle", widget: "string" }
+      - { label: "Tags", name: "tags", widget: "hidden", default: "nav" }
+      - { label: "Body", name: "body", widget: "markdown" }
 ```
 ### Set up a repository
 Saving your code in a repository is a nice recommendation for most projects, but for this one it is essential. The repository will be the data store as well as the start of the build process. 
